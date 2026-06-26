@@ -173,31 +173,35 @@ export default function App() {
 
 
 
-  const wrongIdSet = useMemo(() => new Set(progress.wrongQuestionIds), [progress.wrongQuestionIds]);
+  const [sessionQuestions, setSessionQuestions] = useState<Question[]>([]);
 
 
 
-  const filteredQuestions = useMemo(
+  useEffect(() => {
 
-    () => filterQuestions(allQuestions, category, year, mode, wrongIdSet),
+    const filtered = filterQuestions(
 
-    [category, year, mode, wrongIdSet],
+      allQuestions,
 
-  );
+      category,
 
+      year,
 
+      mode,
 
-  const sessionQuestions = useMemo(
+      new Set(progress.wrongQuestionIds),
 
-    () => shuffleArray(filteredQuestions),
+    );
 
-    [filteredQuestions, shuffleKey],
+    setSessionQuestions(shuffleArray(filtered));
 
-  );
+  }, [shuffleKey, category, year, mode]);
 
 
 
   const currentQuestion = sessionQuestions[currentIndex];
+
+  const currentQuestionId = currentQuestion?.id;
 
 
 
@@ -213,7 +217,7 @@ export default function App() {
 
     setShowResult(false);
 
-  }, [currentQuestion]);
+  }, [currentQuestionId, currentIndex]);
 
 
 
