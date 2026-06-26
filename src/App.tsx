@@ -4,6 +4,8 @@ import questionsData from '@data/questions.json';
 
 import examData from '@data/exams/r4-2022-02.json';
 
+import r5FirstExamData from '@data/exams/r5-2023-01.json';
+
 import r5ExamData from '@data/exams/r5-2023-02.json';
 
 import { ClozeView } from './components/ClozeView';
@@ -47,6 +49,7 @@ import './App.css';
 const allQuestions = [
   ...(questionsData as Question[]),
   ...(examData as Question[]),
+  ...(r5FirstExamData as Question[]),
   ...(r5ExamData as Question[]),
 ];
 
