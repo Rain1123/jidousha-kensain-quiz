@@ -14,9 +14,11 @@ function migrateLastFilters(raw: unknown): Progress['lastFilters'] {
   const filters = raw as Record<string, string>;
 
   if ('examSession' in filters || 'questionType' in filters) {
+    const questionType =
+      filters.questionType === 'choice' ? defaults.questionType : (filters.questionType ?? defaults.questionType);
     return {
       examSession: filters.examSession ?? defaults.examSession,
-      questionType: filters.questionType ?? defaults.questionType,
+      questionType,
     };
   }
 

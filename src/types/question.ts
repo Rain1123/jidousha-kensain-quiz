@@ -85,8 +85,9 @@ export interface AnswerRecord {
 
 export type QuestionTypeKey = 'choice' | 'cloze' | 'truefalse' | 'matching';
 
-export const QUESTION_TYPE_OPTIONS: { value: QuestionTypeKey; label: string }[] = [
-  { value: 'choice', label: '4択' },
+export type QuestionTypeFilterKey = Exclude<QuestionTypeKey, 'choice'>;
+
+export const QUESTION_TYPE_OPTIONS: { value: QuestionTypeFilterKey; label: string }[] = [
   { value: 'cloze', label: '穴埋め' },
   { value: 'truefalse', label: '○×' },
   { value: 'matching', label: '記号選択' },
@@ -128,7 +129,7 @@ export function getQuestionTypeKey(question: Question): QuestionTypeKey {
 
 export function getQuestionTypeLabel(question: Question): string {
   const key = getQuestionTypeKey(question);
-  return QUESTION_TYPE_OPTIONS.find((option) => option.value === key)?.label ?? '4択';
+  return QUESTION_TYPE_OPTIONS.find((option) => option.value === key)?.label ?? 'その他';
 }
 
 export function getBlankCount(question: Question): number {
