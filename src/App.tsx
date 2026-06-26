@@ -397,9 +397,9 @@ export default function App() {
 
       handleRestart();
 
-      setCategory('all');
+      setExamSession('all');
 
-      setYear('all');
+      setQuestionType('all');
 
       setMode('practice');
 
