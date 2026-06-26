@@ -46,6 +46,8 @@ import {
 
 import { gradeClozeAnswers, gradeMatchingAnswers } from './utils/grading';
 
+import { shuffleArray } from './utils/shuffle';
+
 import './App.css';
 
 
@@ -141,6 +143,8 @@ export default function App() {
 
   const [sessionWrong, setSessionWrong] = useState(0);
 
+  const [shuffleKey, setShuffleKey] = useState(0);
+
 
 
   const categories = useMemo(
@@ -183,7 +187,17 @@ export default function App() {
 
 
 
-  const currentQuestion = filteredQuestions[currentIndex];
+  const sessionQuestions = useMemo(
+
+    () => shuffleArray(filteredQuestions),
+
+    [filteredQuestions, shuffleKey],
+
+  );
+
+
+
+  const currentQuestion = sessionQuestions[currentIndex];
 
 
 
@@ -205,15 +219,9 @@ export default function App() {
 
   const resetSession = useCallback(() => {
 
+    setShuffleKey((k) => k + 1);
+
     setCurrentIndex(0);
-
-    const next = resetAnswerState(filteredQuestions[0]);
-
-    setSelectedAnswer(next.selectedAnswer);
-
-    setTfAnswer(next.tfAnswer);
-
-    setBlankInputs(next.blankInputs);
 
     setShowResult(false);
 
@@ -223,7 +231,7 @@ export default function App() {
 
     setSessionWrong(0);
 
-  }, [filteredQuestions]);
+  }, []);
 
 
 
@@ -369,7 +377,7 @@ export default function App() {
 
   const handleNext = useCallback(() => {
 
-    if (currentIndex + 1 >= filteredQuestions.length) {
+    if (currentIndex + 1 >= sessionQuestions.length) {
 
       setPhase('result');
 
@@ -379,7 +387,7 @@ export default function App() {
 
     setCurrentIndex((i) => i + 1);
 
-  }, [currentIndex, filteredQuestions.length]);
+  }, [currentIndex, sessionQuestions.length]);
 
 
 
@@ -437,9 +445,9 @@ export default function App() {
 
         correctCount={progress.answered.filter((a) => a.isCorrect).length}
 
-        sessionIndex={phase === 'result' ? filteredQuestions.length : currentIndex + 1}
+        sessionIndex={phase === 'result' ? sessionQuestions.length : currentIndex + 1}
 
-        sessionTotal={filteredQuestions.length}
+        sessionTotal={sessionQuestions.length}
 
         onReset={handleReset}
 
@@ -473,7 +481,7 @@ export default function App() {
 
 
 
-        {filteredQuestions.length === 0 ? (
+        {sessionQuestions.length === 0 ? (
 
           <section className="empty-state">
 
@@ -493,7 +501,7 @@ export default function App() {
 
           <ResultView
 
-            total={filteredQuestions.length}
+            total={sessionQuestions.length}
 
             correct={sessionCorrect}
 
@@ -511,7 +519,7 @@ export default function App() {
 
             sessionIndex={currentIndex + 1}
 
-            sessionTotal={filteredQuestions.length}
+            sessionTotal={sessionQuestions.length}
 
             inputs={blankInputs}
 
@@ -533,7 +541,7 @@ export default function App() {
 
             sessionIndex={currentIndex + 1}
 
-            sessionTotal={filteredQuestions.length}
+            sessionTotal={sessionQuestions.length}
 
             inputs={blankInputs}
 
@@ -555,7 +563,7 @@ export default function App() {
 
             sessionIndex={currentIndex + 1}
 
-            sessionTotal={filteredQuestions.length}
+            sessionTotal={sessionQuestions.length}
 
             selectedAnswer={tfAnswer}
 
@@ -577,7 +585,7 @@ export default function App() {
 
             sessionIndex={currentIndex + 1}
 
-            sessionTotal={filteredQuestions.length}
+            sessionTotal={sessionQuestions.length}
 
             selectedAnswer={selectedAnswer}
 
