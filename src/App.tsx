@@ -8,6 +8,10 @@ import r5FirstExamData from '@data/exams/r5-2023-01.json';
 
 import r5ExamData from '@data/exams/r5-2023-02.json';
 
+import r6FirstExamData from '@data/exams/r6-2024-01.json';
+
+import r6SecondExamData from '@data/exams/r6-2024-02.json';
+
 import { ClozeView } from './components/ClozeView';
 
 import { FilterPanel } from './components/FilterPanel';
@@ -51,6 +55,8 @@ const allQuestions = [
   ...(examData as Question[]),
   ...(r5FirstExamData as Question[]),
   ...(r5ExamData as Question[]),
+  ...(r6FirstExamData as Question[]),
+  ...(r6SecondExamData as Question[]),
 ];
 
 
