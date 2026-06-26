@@ -1,5 +1,12 @@
 import type { ClozeQuestion } from '../types/question';
-import { isClozeItemCorrect, splitClozeText } from '../utils/grading';
+import { flattenClozeBlanks, getClozeItemAnswers } from '../utils/grading';
+import { FormattedText } from './FormattedText';
+import { QuestionMeta } from './QuestionMeta';
+import {
+  ClozeSentence,
+  getClozeItemBlankCount,
+  isClozeItemAllCorrect,
+} from './ClozeSentence';
 
 interface ClozeViewProps {
   question: ClozeQuestion;
@@ -23,37 +30,42 @@ export function ClozeView({
   onNext,
 }: ClozeViewProps) {
   const isLast = sessionIndex >= sessionTotal;
-  const allFilled = inputs.length === question.items.length && inputs.every((v) => v.trim());
+  const blankCount = flattenClozeBlanks(question.items).length;
+  const allFilled = inputs.length === blankCount && inputs.every((v) => v.trim());
+
+  let inputOffset = 0;
   const allCorrect =
     showResult &&
-    question.items.every((item, index) =>
-      isClozeItemCorrect(inputs[index] ?? '', item.answer, item.acceptableAnswers),
-    );
+    question.items.every((item) => {
+      const correct = isClozeItemAllCorrect(item, inputs, inputOffset);
+      inputOffset += getClozeItemBlankCount(item);
+      return correct;
+    });
+
+  let renderOffset = 0;
 
   return (
     <section className="quiz-view cloze-view" aria-live="polite">
-      <div className="question-meta">
-        <span className="badge">{question.category}</span>
-        <span className="badge badge-cloze">穴埋め</span>
-        {question.year && <span className="badge badge-year">{question.year}年</span>}
-        <span className="question-id">{question.id}</span>
-      </div>
+      <QuestionMeta question={question} />
 
-      <p className="question-text question-instruction">{question.question}</p>
+      <FormattedText text={question.question} className="question-text question-instruction" />
 
       <ol className="cloze-items">
         {question.items.map((item, index) => {
-          const [before, after] = splitClozeText(item.text);
-          const inputValue = inputs[index] ?? '';
+          const itemOffset = renderOffset;
+          const itemBlankCount = getClozeItemBlankCount(item);
+          renderOffset += itemBlankCount;
+
           const itemCorrect = showResult
-            ? isClozeItemCorrect(inputValue, item.answer, item.acceptableAnswers)
+            ? isClozeItemAllCorrect(item, inputs, itemOffset)
             : null;
+          const answers = getClozeItemAnswers(item);
 
           return (
-            <li key={item.number} className="cloze-item">
+            <li key={`${item.number}-${index}`} className="cloze-item">
               <div className="cloze-item-header">
                 <span className="cloze-number">{item.number}</span>
-                {showResult && (
+                {showResult && itemBlankCount > 0 && (
                   <span
                     className={`cloze-item-result ${itemCorrect ? 'correct' : 'incorrect'}`}
                   >
@@ -61,24 +73,22 @@ export function ClozeView({
                   </span>
                 )}
               </div>
-              <p className="cloze-sentence">
-                {before}
-                <input
-                  type="text"
-                  className={`cloze-input ${showResult ? (itemCorrect ? 'correct' : 'incorrect') : ''}`}
-                  value={inputValue}
-                  onChange={(e) => onInputChange(index, e.target.value)}
-                  disabled={showResult}
-                  aria-label={`設問${item.number}の解答`}
-                  placeholder="語句・数値"
-                  autoComplete="off"
-                  inputMode="text"
-                />
-                {after}
-              </p>
-              {showResult && !itemCorrect && (
+              <ClozeSentence
+                item={item}
+                inputs={inputs}
+                inputOffset={itemOffset}
+                showResult={showResult}
+                disabled={showResult}
+                onInputChange={onInputChange}
+              />
+              {showResult && !itemCorrect && itemBlankCount > 0 && (
                 <p className="cloze-answer-hint">
-                  正解: <strong>{item.answer}</strong>
+                  正解:{' '}
+                  <strong>
+                    {answers.length === 1
+                      ? answers[0]
+                      : answers.map((answer, answerIndex) => `${answerIndex + 1}) ${answer}`).join('、')}
+                  </strong>
                 </p>
               )}
             </li>

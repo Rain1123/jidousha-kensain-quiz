@@ -1,4 +1,5 @@
 import type { ChoiceQuestion } from '../types/question';
+import { QuestionMeta } from './QuestionMeta';
 
 interface QuizViewProps {
   question: ChoiceQuestion;
@@ -26,11 +27,7 @@ export function QuizView({
 
   return (
     <section className="quiz-view" aria-live="polite">
-      <div className="question-meta">
-        <span className="badge">{question.category}</span>
-        {question.year && <span className="badge badge-year">{question.year}年</span>}
-        <span className="question-id">{question.id}</span>
-      </div>
+      <QuestionMeta question={question} />
 
       <p className="question-text">{question.question}</p>
 

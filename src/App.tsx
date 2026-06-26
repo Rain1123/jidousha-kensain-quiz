@@ -34,6 +34,8 @@ import {
 
   getBlankCount,
 
+  getQuestionTypeKey,
+
   isChoiceQuestion,
 
   isClozeQuestion,
@@ -71,9 +73,9 @@ function filterQuestions(
 
   questions: Question[],
 
-  category: string,
+  examSession: string,
 
-  year: string,
+  questionType: string,
 
   mode: QuizMode,
 
@@ -85,9 +87,9 @@ function filterQuestions(
 
     if (mode === 'review' && !wrongIds.has(q.id)) return false;
 
-    if (category !== 'all' && q.category !== category) return false;
+    if (examSession !== 'all' && q.category !== examSession) return false;
 
-    if (year !== 'all' && String(q.year) !== year) return false;
+    if (questionType !== 'all' && getQuestionTypeKey(q) !== questionType) return false;
 
     return true;
 
@@ -123,9 +125,9 @@ export default function App() {
 
   const [mode, setMode] = useState<QuizMode>('practice');
 
-  const [category, setCategory] = useState(progress.lastFilters.category);
+  const [examSession, setExamSession] = useState(progress.lastFilters.examSession);
 
-  const [year, setYear] = useState(progress.lastFilters.year);
+  const [questionType, setQuestionType] = useState(progress.lastFilters.questionType);
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -147,25 +149,9 @@ export default function App() {
 
 
 
-  const categories = useMemo(
+  const examSessions = useMemo(
 
     () => [...new Set(allQuestions.map((q) => q.category))].sort(),
-
-    [],
-
-  );
-
-
-
-  const years = useMemo(
-
-    () =>
-
-      [...new Set(allQuestions.map((q) => q.year).filter((y): y is number => y != null))].sort(
-
-        (a, b) => b - a,
-
-      ),
 
     [],
 
@@ -183,9 +169,9 @@ export default function App() {
 
       allQuestions,
 
-      category,
+      examSession,
 
-      year,
+      questionType,
 
       mode,
 
@@ -195,7 +181,7 @@ export default function App() {
 
     setSessionQuestions(shuffleArray(filtered));
 
-  }, [shuffleKey, category, year, mode]);
+  }, [shuffleKey, examSession, questionType, mode]);
 
 
 
@@ -239,13 +225,13 @@ export default function App() {
 
 
 
-  const handleCategoryChange = useCallback(
+  const handleExamSessionChange = useCallback(
 
     (value: string) => {
 
-      setCategory(value);
+      setExamSession(value);
 
-      setFilters(value, year);
+      setFilters(value, questionType);
 
       setCurrentIndex(0);
 
@@ -265,19 +251,19 @@ export default function App() {
 
     },
 
-    [setFilters, year],
+    [setFilters, questionType],
 
   );
 
 
 
-  const handleYearChange = useCallback(
+  const handleQuestionTypeChange = useCallback(
 
     (value: string) => {
 
-      setYear(value);
+      setQuestionType(value);
 
-      setFilters(category, value);
+      setFilters(examSession, value);
 
       setCurrentIndex(0);
 
@@ -297,7 +283,7 @@ export default function App() {
 
     },
 
-    [category, setFilters],
+    [examSession, setFilters],
 
   );
 
@@ -463,21 +449,19 @@ export default function App() {
 
         <FilterPanel
 
-          categories={categories}
+          examSessions={examSessions}
 
-          years={years}
+          examSession={examSession}
 
-          category={category}
-
-          year={year}
+          questionType={questionType}
 
           mode={mode}
 
           wrongCount={progress.wrongQuestionIds.length}
 
-          onCategoryChange={handleCategoryChange}
+          onExamSessionChange={handleExamSessionChange}
 
-          onYearChange={handleYearChange}
+          onQuestionTypeChange={handleQuestionTypeChange}
 
           onModeChange={handleModeChange}
 

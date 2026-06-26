@@ -41,10 +41,10 @@ export function useProgress() {
     [],
   );
 
-  const setFilters = useCallback((category: string, year: string) => {
+  const setFilters = useCallback((examSession: string, questionType: string) => {
     setProgress((prev) => ({
       ...prev,
-      lastFilters: { category, year },
+      lastFilters: { examSession, questionType },
     }));
   }, []);
 
@@ -52,7 +52,7 @@ export function useProgress() {
     setProgress({
       answered: [],
       wrongQuestionIds: [],
-      lastFilters: { category: 'all', year: 'all' },
+      lastFilters: { examSession: 'all', questionType: 'all' },
     });
   }, []);
 

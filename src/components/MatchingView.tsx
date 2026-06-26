@@ -1,5 +1,7 @@
 import type { MatchingQuestion } from '../types/question';
 import { isClozeItemCorrect, splitMatchingText } from '../utils/grading';
+import { FormattedText } from './FormattedText';
+import { QuestionMeta } from './QuestionMeta';
 
 interface MatchingViewProps {
   question: MatchingQuestion;
@@ -40,14 +42,9 @@ export function MatchingView({
 
   return (
     <section className="quiz-view matching-view" aria-live="polite">
-      <div className="question-meta">
-        <span className="badge">{question.category}</span>
-        <span className="badge badge-matching">記号選択</span>
-        {question.year && <span className="badge badge-year">{question.year}年</span>}
-        <span className="question-id">{question.id}</span>
-      </div>
+      <QuestionMeta question={question} />
 
-      <p className="question-text question-instruction">{question.question}</p>
+      <FormattedText text={question.question} className="question-text question-instruction" />
 
       <div className="choice-pool" aria-label="選択肢一覧">
         <h3 className="choice-pool-title">〔選択肢〕</h3>
@@ -70,9 +67,12 @@ export function MatchingView({
               <div className="cloze-item-header">
                 <span className="cloze-number">{item.number}</span>
               </div>
-              <p className="cloze-sentence matching-sentence">
+              <div className="cloze-sentence matching-sentence">
                 {parts.map((part, partIndex) => {
                   if (typeof part === 'string') {
+                    if (part.includes('\n') || part.includes('|')) {
+                      return <FormattedText key={partIndex} text={part} />;
+                    }
                     return <span key={partIndex}>{part}</span>;
                   }
 
@@ -112,7 +112,7 @@ export function MatchingView({
                     </span>
                   );
                 })}
-              </p>
+              </div>
             </li>
           );
         })}

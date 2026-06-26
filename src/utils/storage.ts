@@ -4,18 +4,47 @@ import { STORAGE_KEY } from '../types/question';
 const defaultProgress = (): Progress => ({
   answered: [],
   wrongQuestionIds: [],
-  lastFilters: { category: 'all', year: 'all' },
+  lastFilters: { examSession: 'all', questionType: 'all' },
 });
+
+function migrateLastFilters(raw: unknown): Progress['lastFilters'] {
+  const defaults = defaultProgress().lastFilters;
+  if (!raw || typeof raw !== 'object') return defaults;
+
+  const filters = raw as Record<string, string>;
+
+  if ('examSession' in filters || 'questionType' in filters) {
+    return {
+      examSession: filters.examSession ?? defaults.examSession,
+      questionType: filters.questionType ?? defaults.questionType,
+    };
+  }
+
+  const legacyCategory = filters.category ?? defaults.examSession;
+  const legacyYear = filters.year ?? defaults.questionType;
+
+  if (legacyYear !== 'all' && /^\d{4}$/.test(legacyYear)) {
+    return {
+      examSession: legacyCategory.includes('年度') ? legacyCategory : defaults.examSession,
+      questionType: defaults.questionType,
+    };
+  }
+
+  return {
+    examSession: legacyCategory,
+    questionType: legacyYear,
+  };
+}
 
 export function loadProgress(): Progress {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaultProgress();
-    const parsed = JSON.parse(raw) as Progress;
+    const parsed = JSON.parse(raw) as Partial<Progress>;
     return {
       ...defaultProgress(),
       ...parsed,
-      lastFilters: { ...defaultProgress().lastFilters, ...parsed.lastFilters },
+      lastFilters: migrateLastFilters(parsed.lastFilters),
     };
   } catch {
     return defaultProgress();

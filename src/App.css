@@ -139,6 +139,16 @@
   color: var(--color-primary-dark);
 }
 
+.badge-exam {
+  background: #e8f0fb;
+  color: var(--color-primary-dark);
+}
+
+.badge-type {
+  background: #f3e8ff;
+  color: #6b21a8;
+}
+
 .badge-year {
   background: #f0f0f0;
   color: var(--color-muted);
@@ -181,6 +191,60 @@
   font-size: 0.95rem;
   font-weight: 500;
   color: var(--color-muted);
+}
+
+.formatted-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.formatted-text.question-instruction {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-muted);
+  margin-bottom: 0.5rem;
+}
+
+.formatted-paragraph {
+  margin: 0;
+  line-height: 1.8;
+}
+
+.formatted-table-wrap {
+  overflow-x: auto;
+  margin: 0.25rem 0;
+}
+
+.formatted-table-caption {
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.formatted-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.formatted-table th,
+.formatted-table td {
+  border: 1px solid var(--color-border);
+  padding: 0.5rem 0.65rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.formatted-table th {
+  background: #eef2f8;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.formatted-table tbody tr:nth-child(even) {
+  background: #f8fafc;
 }
 
 .cloze-items {
@@ -235,18 +299,24 @@
   font-size: 0.95rem;
 }
 
+.cloze-blank-slot {
+  display: inline;
+  white-space: nowrap;
+}
+
 .cloze-input {
   display: inline-block;
-  min-width: 5rem;
+  min-width: 3.5rem;
   max-width: 100%;
-  margin: 0 0.25rem;
-  padding: 0.35rem 0.5rem;
-  border: 2px solid var(--color-primary);
-  border-radius: 6px;
+  margin: 0 0.1rem;
+  padding: 0.2rem 0.4rem;
+  border: none;
+  border-bottom: 2px solid var(--color-primary);
+  border-radius: 0;
   font: inherit;
   font-weight: 600;
   text-align: center;
-  background: #fff;
+  background: #f0f4ff;
   vertical-align: baseline;
 }
 

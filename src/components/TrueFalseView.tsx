@@ -1,4 +1,5 @@
 import type { TrueFalseQuestion } from '../types/question';
+import { QuestionMeta } from './QuestionMeta';
 
 interface TrueFalseViewProps {
   question: TrueFalseQuestion;
@@ -26,13 +27,7 @@ export function TrueFalseView({
 
   return (
     <section className="quiz-view" aria-live="polite">
-      <div className="question-meta">
-        <span className="badge">{question.category}</span>
-        {question.section && <span className="badge badge-section">{question.section}</span>}
-        <span className="badge badge-tf">○×</span>
-        {question.year && <span className="badge badge-year">{question.year}年</span>}
-        <span className="question-id">{question.id}</span>
-      </div>
+      <QuestionMeta question={question} />
 
       <p className="question-text">{question.question}</p>
 

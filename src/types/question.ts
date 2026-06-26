@@ -3,6 +3,9 @@ export interface ClozeItem {
   text: string;
   answer: string;
   acceptableAnswers?: string[];
+  /** 1項目に複数の __BLANK__ がある場合の正答（空欄の順） */
+  answers?: string[];
+  acceptableAnswersList?: string[][];
 }
 
 export interface MatchingBlank {
@@ -80,12 +83,21 @@ export interface AnswerRecord {
   answeredAt: string;
 }
 
+export type QuestionTypeKey = 'choice' | 'cloze' | 'truefalse' | 'matching';
+
+export const QUESTION_TYPE_OPTIONS: { value: QuestionTypeKey; label: string }[] = [
+  { value: 'choice', label: '4択' },
+  { value: 'cloze', label: '穴埋め' },
+  { value: 'truefalse', label: '○×' },
+  { value: 'matching', label: '記号選択' },
+];
+
 export interface Progress {
   answered: AnswerRecord[];
   wrongQuestionIds: string[];
   lastFilters: {
-    category: string;
-    year: string;
+    examSession: string;
+    questionType: string;
   };
 }
 
@@ -107,8 +119,28 @@ export function isChoiceQuestion(question: Question): question is ChoiceQuestion
   return !question.type || question.type === 'choice';
 }
 
+export function getQuestionTypeKey(question: Question): QuestionTypeKey {
+  if (isClozeQuestion(question)) return 'cloze';
+  if (isTrueFalseQuestion(question)) return 'truefalse';
+  if (isMatchingQuestion(question)) return 'matching';
+  return 'choice';
+}
+
+export function getQuestionTypeLabel(question: Question): string {
+  const key = getQuestionTypeKey(question);
+  return QUESTION_TYPE_OPTIONS.find((option) => option.value === key)?.label ?? '4択';
+}
+
 export function getBlankCount(question: Question): number {
-  if (isClozeQuestion(question)) return question.items.length;
+  if (isClozeQuestion(question)) {
+    return question.items.reduce(
+      (sum, item) =>
+        sum +
+        item.text.split('__BLANK__').length -
+        1,
+      0,
+    );
+  }
   if (isMatchingQuestion(question)) {
     return question.items.reduce((sum, item) => sum + item.blanks.length, 0);
   }

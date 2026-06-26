@@ -1,57 +1,56 @@
 import type { QuizMode } from '../types/question';
+import { QUESTION_TYPE_OPTIONS } from '../types/question';
 
 interface FilterPanelProps {
-  categories: string[];
-  years: number[];
-  category: string;
-  year: string;
+  examSessions: string[];
+  examSession: string;
+  questionType: string;
   mode: QuizMode;
   wrongCount: number;
-  onCategoryChange: (value: string) => void;
-  onYearChange: (value: string) => void;
+  onExamSessionChange: (value: string) => void;
+  onQuestionTypeChange: (value: string) => void;
   onModeChange: (mode: QuizMode) => void;
 }
 
 export function FilterPanel({
-  categories,
-  years,
-  category,
-  year,
+  examSessions,
+  examSession,
+  questionType,
   mode,
   wrongCount,
-  onCategoryChange,
-  onYearChange,
+  onExamSessionChange,
+  onQuestionTypeChange,
   onModeChange,
 }: FilterPanelProps) {
   return (
     <section className="filter-panel" aria-label="フィルタ設定">
       <div className="filter-row">
-        <label htmlFor="category-filter">カテゴリ</label>
+        <label htmlFor="exam-session-filter">年度</label>
         <select
-          id="category-filter"
-          value={category}
-          onChange={(e) => onCategoryChange(e.target.value)}
+          id="exam-session-filter"
+          value={examSession}
+          onChange={(e) => onExamSessionChange(e.target.value)}
         >
           <option value="all">すべて</option>
-          {categories.map((c) => (
-            <option key={c} value={c}>
-              {c}
+          {examSessions.map((session) => (
+            <option key={session} value={session}>
+              {session}
             </option>
           ))}
         </select>
       </div>
 
       <div className="filter-row">
-        <label htmlFor="year-filter">年度</label>
+        <label htmlFor="question-type-filter">カテゴリ</label>
         <select
-          id="year-filter"
-          value={year}
-          onChange={(e) => onYearChange(e.target.value)}
+          id="question-type-filter"
+          value={questionType}
+          onChange={(e) => onQuestionTypeChange(e.target.value)}
         >
           <option value="all">すべて</option>
-          {years.map((y) => (
-            <option key={y} value={String(y)}>
-              {y}年
+          {QUESTION_TYPE_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
             </option>
           ))}
         </select>
